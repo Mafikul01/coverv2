@@ -497,17 +497,29 @@ window.addEventListener('resize', () => {
         const icon = menuBtn ? menuBtn.querySelector('i') : null;
 
         if (window.innerWidth > 968) {
-            sidebar.classList.remove('active');
+            // Desktop: Only update icon, don't close sidebar automatically
             const ov = document.getElementById('sidebarOverlay');
             if (ov) ov.classList.remove('active');
+            sidebar.classList.remove('active'); // Remove mobile active class
             if (icon) {
                 icon.className = layout.classList.contains('sidebar-hidden')
                     ? 'fas fa-chevron-right' : 'fas fa-bars';
             }
         } else {
-            sidebar.classList.remove('active');
-            const ov = document.getElementById('sidebarOverlay');
-            if (ov) ov.classList.remove('active');
+            // Mobile: Don't auto-close if user is actively using the form
+            const activeElement = document.activeElement;
+            const isUserTyping = activeElement && (
+                activeElement.tagName === 'INPUT' || 
+                activeElement.tagName === 'SELECT' || 
+                activeElement.tagName === 'TEXTAREA'
+            );
+            
+            // Only auto-close if user is not actively typing
+            if (!isUserTyping) {
+                const ov = document.getElementById('sidebarOverlay');
+                if (ov) ov.classList.remove('active');
+                sidebar.classList.remove('active');
+            }
             if (icon) icon.className = 'fas fa-bars';
         }
     }, 250);
